@@ -3,58 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting...</title>
+    <title>Open in Browser</title>
     <style>
-        /* A clean, modern dark-mode fallback UI */
-        body { 
-            background-color: #121212; 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            text-align: center; 
-            margin: 0; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            height: 100vh; 
+        /* Modern Dark Mode UI */
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        h1 { font-size: 1.8rem; margin-bottom: 10px; }
-        p { color: #aaaaaa; font-size: 1rem; padding: 0 20px; line-height: 1.5; }
-        .highlight { color: #ff0050; font-weight: bold; } /* TikTok red accent */
+        
+        .container {
+            background: #1e1e1e;
+            padding: 40px 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            max-width: 90%;
+            width: 350px;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        p {
+            color: #b3b3b3;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        /* The Magic Button */
+        .escape-btn {
+            background-color: #ff0050; /* TikTok Red */
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(255, 0, 80, 0.4);
+            transition: transform 0.2s, background-color 0.2s;
+            animation: pulse 2s infinite;
+        }
+
+        .escape-btn:active {
+            transform: scale(0.95);
+            background-color: #d40042;
+        }
+
+        /* Pulse animation to make them want to click it */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 0, 80, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 0, 80, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 0, 80, 0); }
+        }
+
+        .manual-tip {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #777;
+        }
+        
+        .highlight { color: #ff0050; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <!-- This only shows if the code fails to execute instantly -->
-    <div>
-        <h1>🚀 Launching Chrome...</h1>
-        <p>If you're stuck on this screen, tap the <span class="highlight">3 dots</span> in the top right corner and select <span class="highlight">"Open in Browser"</span>!</p>
+    <div class="container">
+        <h1>Leave TikTok to Continue</h1>
+        <p>This link works best in your normal web browser. Tap below to break out!</p>
+        
+        <!-- The button calls the JavaScript function when tapped -->
+        <button class="escape-btn" onclick="attemptRedirect()">🚀 Open in Chrome</button>
+        
+        <div class="manual-tip">
+            If the button doesn't work, tap the <span class="highlight">3 dots ↗️</span> in the top right corner and select <span class="highlight">"Open in Browser"</span>.
+        </div>
     </div>
 
     <script>
-        // 1. 🛑 SETUP YOUR URLS HERE 🛑
-        // Put your domain WITHOUT the https:// here
+        // 🛑 YOUR URLS 🛑
         const TARGET_DOMAIN = "your-website-here.com"; 
         
-        // Put your full URL here, but it MUST be URL Encoded! 
-        // Example: https://your-website-here.com becomes https%3A%2F%2Fyour-website-here.com
+        // Remember: URL Encode this bad boy! 
         const FALLBACK_URL = "https%3A%2F%2Fyour-website-here.com"; 
 
-        // 2. 🧬 The God-Tier Android Intent
-        // We are forcing the VIEW action, making it BROWSABLE, targeting Chrome, AND setting a hard fallback.
-        const androidIntent = `intent://${TARGET_DOMAIN}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.android.chrome;S.browser_fallback_url=${FALLBACK_URL};end;`;
+        function attemptRedirect() {
+            // The God-Tier Android Intent
+            const androidIntent = `intent://${TARGET_DOMAIN}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.android.chrome;S.browser_fallback_url=${FALLBACK_URL};end;`;
 
-        // 3. 📱 The Vibe Check (Device & App Detection)
-        const ua = navigator.userAgent || navigator.vendor || window.opera;
-        const isTikTok = ua.indexOf("TikTok") > -1 || ua.indexOf("ByteLocale") > -1;
-        const isAndroid = /android/i.test(ua);
+            // Check device and environment
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isTikTok = ua.indexOf("TikTok") > -1 || ua.indexOf("ByteLocale") > -1;
+            const isAndroid = /android/i.test(ua);
 
-        // 4. 🏃‍♂️ The Escape Execution
-        if (isTikTok && isAndroid) {
-            // We use replace() instead of href so the user can't hit the 'back' button and get stuck in a loop
-            window.location.replace(androidIntent);
-        } else if (!isTikTok) {
-            // If they are already in a normal browser (not TikTok), just load the site normally
-            window.location.replace("https://" + TARGET_DOMAIN);
+            if (isTikTok && isAndroid) {
+                // Fire the intent using location.href since it's a user action now
+                window.location.href = androidIntent;
+            } else {
+                // If they are not on Android, or already outside TikTok, just take them straight to the site
+                window.location.href = "https://" + TARGET_DOMAIN;
+            }
         }
     </script>
 </body>
