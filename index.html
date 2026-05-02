@@ -5,39 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Open in Browser</title>
     <style>
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: sans-serif; overflow: hidden; }
-
-        /* The background of your actual site */
-        #actual-site {
-            width: 100%;
+        body, html {
+            margin: 0;
+            padding: 0;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: filter 0.5s ease;
+            width: 100%;
+            background: #000;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
         }
 
-        /* The "Locked" state */
-        .is-blurred { filter: blur(15px) brightness(0.5); pointer-events: none; }
+        * {
+            box-sizing: border-box;
+        }
 
-        /* The Overlay */
-        #tiktok-overlay {
-            display: none; /* Hidden by default */
+        .bg-wrapper {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 9999;
-            color: white;
-            text-align: center;
+            inset: 0;
+            background: url('thebackground.png') no-repeat center center;
+            background-size: cover;
+            transform: scale(1.06);
+            filter: blur(7px);
+            z-index: 1;
         }
 
-        /* The Animated Arrow pointing to the top-right 3 dots */
+        .gradient-overlay {
+            position: fixed;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.8) 100%);
+            z-index: 2;
+        }
+
+        #tiktok-overlay {
+            display: none;
+            position: relative;
+            z-index: 10;
+            min-height: 100svh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 18px 14px 26px;
+            color: white;
+        }
+
         .arrow {
             position: absolute;
-            top: 20px;
-            right: 25px;
-            font-size: 80px;
-            animation: bounce 1s infinite;
-            color: #ff0050; /* TikTok Red */
+            top: 8px;
+            right: 14px;
+            font-size: 74px;
+            color: #ff0050;
+            animation: bounce 1.2s infinite;
+            text-shadow: 0 0 20px rgba(255, 0, 80, 0.6);
+            pointer-events: none;
         }
 
         @keyframes bounce {
@@ -45,66 +66,67 @@
             50% { transform: translateY(15px) rotate(-15deg); }
         }
 
-        .instruction-box {
-            margin-top: 150px;
-            padding: 20px;
+        .content-box {
+            text-align: center;
+            width: min(95vw, 720px);
+            margin-top: 90px;
         }
 
-        h1 { font-size: 2rem; margin-bottom: 10px; }
-        p { font-size: 1.1rem; color: #ccc; line-height: 1.4; }
-        
+        .instruction {
+            font-size: clamp(1.1rem, 2.9vw, 1.45rem);
+            font-weight: 600;
+            margin-bottom: 18px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
         .dots-icon {
             display: inline-block;
-            background: #333;
-            padding: 5px 15px;
-            border-radius: 10px;
-            font-weight: bold;
-            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.22);
+            padding: 2px 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(3px);
+            font-weight: 700;
+        }
+
+        .guide-image {
+            width: min(96vw, 980px);
+            max-height: 74svh;
+            object-fit: contain;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.45);
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
 
-    <!-- 1. YOUR ACTUAL CONTENT GOES HERE -->
-    <div id="actual-site">
-        <h1 style="color: white;">Welcome to my dope site!</h1>
-        <!-- Put your real site HTML/IFRAME/CONTENT here -->
-    </div>
+    <div class="bg-wrapper"></div>
+    <div class="gradient-overlay"></div>
 
-    <!-- 2. THE TIKTOK ESCAPE OVERLAY -->
     <div id="tiktok-overlay">
         <div class="arrow">⤴</div>
-        <div class="instruction-box">
-            <h1>Link Locked 🔒</h1>
-            <p>TikTok limits this page's features.</p>
-            <p>Tap the <span class="dots-icon">...</span> above</p>
-            <p>and select <span style="color:#ff0050; font-weight:bold;">"Open in Browser"</span></p>
+
+        <div class="content-box">
+            <div class="instruction">Tap the <span class="dots-icon">...</span> then choose <strong>Open in browser</strong></div>
+            <img class="guide-image" src="openinbrowserimage.png" alt="Open in browser tutorial image">
         </div>
     </div>
 
     <script>
-        function checkBrowser() {
+        function checkTikTok() {
             const ua = navigator.userAgent || navigator.vendor || window.opera;
             const isTikTok = ua.indexOf("TikTok") > -1 || ua.indexOf("ByteLocale") > -1;
-            const siteContent = document.getElementById('actual-site');
             const overlay = document.getElementById('tiktok-overlay');
 
             if (isTikTok) {
-                // LOCK THE SITE
-                siteContent.classList.add('is-blurred');
-                overlay.style.display = 'block';
+                overlay.style.display = 'flex';
             } else {
-                // UNLOCK (Already in Chrome/Safari)
-                siteContent.classList.remove('is-blurred');
-                overlay.style.display = 'none';
+                window.location.replace("https://your-final-destination.com");
             }
         }
 
-        // Run the check instantly
-        checkBrowser();
-        
-        // Optional: Re-check on focus (in case they come back)
-        window.addEventListener('focus', checkBrowser);
+        checkTikTok();
     </script>
 </body>
 </html>
