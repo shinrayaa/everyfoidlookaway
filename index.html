@@ -1,22 +1,61 @@
-<script>
-  // 1. Grab the user's device info
-  const ua = navigator.userAgent || navigator.vendor || window.opera;
-  
-  // 2. Check if they are trapped in TikTok's browser
-  const isTikTok = ua.indexOf("TikTok") > -1 || ua.indexOf("ByteLocale") > -1;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redirecting...</title>
+    <style>
+        /* A clean, modern dark-mode fallback UI */
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            height: 100vh; 
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 10px; }
+        p { color: #aaaaaa; font-size: 1rem; padding: 0 20px; line-height: 1.5; }
+        .highlight { color: #ff0050; font-weight: bold; } /* TikTok red accent */
+    </style>
+</head>
+<body>
 
-  if (isTikTok) {
-    // 3. The Android Escape Route
-    if (/android/i.test(ua)) {
-      window.location.href = "intent://YOUR_WEBSITE.com#Intent;scheme=https;package=com.android.chrome;end;";
-    }
-    // 4. The iPhone Escape Route
-    else if (/iPad|iPhone|iPod/.test(ua) && !window.MSStream) {
-      // Tries to force Chrome on iOS. You can also experiment with x-safari-https://
-      window.location.href = "googlechrome://navigate?url=YOUR_WEBSITE.com"; 
-    }
-  } else {
-    // 5. If they are already in a normal browser, just send them to your site!
-    window.location.href = "https://YOUR_WEBSITE.com";
-  }
-</script>
+    <!-- This only shows if the code fails to execute instantly -->
+    <div>
+        <h1>🚀 Launching Chrome...</h1>
+        <p>If you're stuck on this screen, tap the <span class="highlight">3 dots</span> in the top right corner and select <span class="highlight">"Open in Browser"</span>!</p>
+    </div>
+
+    <script>
+        // 1. 🛑 SETUP YOUR URLS HERE 🛑
+        // Put your domain WITHOUT the https:// here
+        const TARGET_DOMAIN = "your-website-here.com"; 
+        
+        // Put your full URL here, but it MUST be URL Encoded! 
+        // Example: https://your-website-here.com becomes https%3A%2F%2Fyour-website-here.com
+        const FALLBACK_URL = "https%3A%2F%2Fyour-website-here.com"; 
+
+        // 2. 🧬 The God-Tier Android Intent
+        // We are forcing the VIEW action, making it BROWSABLE, targeting Chrome, AND setting a hard fallback.
+        const androidIntent = `intent://${TARGET_DOMAIN}#Intent;scheme=https;action=android.intent.action.VIEW;category=android.intent.category.BROWSABLE;package=com.android.chrome;S.browser_fallback_url=${FALLBACK_URL};end;`;
+
+        // 3. 📱 The Vibe Check (Device & App Detection)
+        const ua = navigator.userAgent || navigator.vendor || window.opera;
+        const isTikTok = ua.indexOf("TikTok") > -1 || ua.indexOf("ByteLocale") > -1;
+        const isAndroid = /android/i.test(ua);
+
+        // 4. 🏃‍♂️ The Escape Execution
+        if (isTikTok && isAndroid) {
+            // We use replace() instead of href so the user can't hit the 'back' button and get stuck in a loop
+            window.location.replace(androidIntent);
+        } else if (!isTikTok) {
+            // If they are already in a normal browser (not TikTok), just load the site normally
+            window.location.replace("https://" + TARGET_DOMAIN);
+        }
+    </script>
+</body>
+</html>
